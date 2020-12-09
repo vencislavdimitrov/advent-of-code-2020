@@ -34,4 +34,3 @@ input_file.each_with_index do |line, index|
 
   pp accumulator if current_instruction == input.size
 end
-

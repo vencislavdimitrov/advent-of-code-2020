@@ -64,33 +64,28 @@ end
 black_tiles = tiles.select { |_, v| (v % 2).odd? }
 pp black_tiles.count
 
-def neighbours(tile)
-  [
-    { x: tile[:x] + 0.5, y: tile[:y] + 1 },
-    { x: tile[:x] + 0.5, y: tile[:y] - 1 },
-    { x: tile[:x] - 0.5, y: tile[:y] + 1 },
-    { x: tile[:x] - 0.5, y: tile[:y] - 1 },
-    { x: tile[:x] + 1, y: tile[:y] },
-    { x: tile[:x] - 1, y: tile[:y] }
-  ]
+def white_neighbours(floor, tile)
+  res = []
+  res << { x: tile[:x] + 0.5, y: tile[:y] + 1 } if floor[{ x: tile[:x] + 0.5, y: tile[:y] + 1 }].nil?
+  res << { x: tile[:x] + 0.5, y: tile[:y] - 1 } if floor[{ x: tile[:x] + 0.5, y: tile[:y] - 1 }].nil?
+  res << { x: tile[:x] - 0.5, y: tile[:y] + 1 } if floor[{ x: tile[:x] - 0.5, y: tile[:y] + 1 }].nil?
+  res << { x: tile[:x] - 0.5, y: tile[:y] - 1 } if floor[{ x: tile[:x] - 0.5, y: tile[:y] - 1 }].nil?
+  res << { x: tile[:x] + 1, y: tile[:y] } if floor[{ x: tile[:x] + 1, y: tile[:y] }].nil?
+  res << { x: tile[:x] - 1, y: tile[:y] } if floor[{ x: tile[:x] - 1, y: tile[:y] }].nil?
+  res
 end
 
 def count_black_neighbours(tiles, tile)
-  tiles.keys.count { |k| neighbours(tile).include? k }
+  6 - white_neighbours(tiles, tile).count
 end
 
 floor = black_tiles.clone
-now = Time.now
-100.times do |i|
-  # pp "day #{i}: #{floor.count} (#{Time.now - now})" if (i % 10).zero?
-
+100.times do
   cache = {}
 
   new_floor = floor.clone
   new_floor.keys.each do |tile|
-    neighbours(tile).each do |neighbour|
-      next unless floor[neighbour].nil?
-
+    white_neighbours(floor, tile).each do |neighbour|
       cache[neighbour] = count_black_neighbours(floor, neighbour) if cache[neighbour].nil?
       black_neughbours = cache[neighbour]
 
